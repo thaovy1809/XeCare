@@ -30,12 +30,14 @@ public class GarageService {
     @JoinColumn(name = "garage_id")
     @JsonBackReference
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Garage garage;
 
     @ManyToOne
     @JoinColumn(name = "service_id")
     @JsonBackReference
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Services service;
 
     private BigDecimal basePrice;
@@ -47,6 +49,7 @@ public class GarageService {
     @JoinColumn(name = "service_type_id") // cột FK trong bảng Garage_Services
     @JsonBackReference
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private GarageServiceType garageServiceType;
     
 }

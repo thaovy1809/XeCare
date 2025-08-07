@@ -2,21 +2,15 @@
 package com.group3.xecare2.garage.controllers;
 
 import java.util.List;
-
+import com.group3.xecare2.enums.GarageStatus;
+import com.group3.xecare2.garage.entities.Garage;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.group3.xecare2.garage.dtos.GarageRegistrationDto;
 import com.group3.xecare2.garage.dtos.GarageResponseDto;
@@ -28,11 +22,17 @@ import com.group3.xecare2.user.entities.User;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/apis/garage")
+@RequestMapping({"/api/v1/garages"})
+@CrossOrigin(origins = "http://localhost:3000")
 public class GarageController {
 
     @Autowired
     private GarageServiceInterface garageService;
+
+    @GetMapping
+    public List<GarageResponseDto> getAll() {
+        return garageService.findAll();
+    }
 
     /**
      * Đăng ký garage mới
@@ -41,20 +41,15 @@ public class GarageController {
     @PostMapping("/register")
     public ResponseEntity<GarageResponseDto> registerGarage(@Valid @RequestBody GarageRegistrationDto registrationDto) {
         try {
-            // Lấy thông tin user hiện tại từ security context
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
-            User currentUser = userDetails.getUser();
-            
-            GarageResponseDto response = garageService.registerGarage(registrationDto, currentUser);
+            GarageResponseDto response = garageService.registerGarage(registrationDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             // Trả về lỗi validation
-        	 e.printStackTrace();
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             // Trả về lỗi server
-        	e.printStackTrace();
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -64,15 +59,10 @@ public class GarageController {
      * PUT /api/garage/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<GarageResponseDto> updateGarage(@PathVariable("id") Long id, 
-                                                         @Valid @RequestBody GarageUpdateDto updateDto) {
+    public ResponseEntity<GarageResponseDto> updateGarage(@PathVariable("id") Long id,
+                                                          @Valid @RequestBody GarageUpdateDto updateDto) {
         try {
-            // Lấy thông tin user hiện tại từ security context
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
-            User currentUser = userDetails.getUser();
-            
-            GarageResponseDto response = garageService.updateGarage(id, updateDto, currentUser);
+            GarageResponseDto response = garageService.updateGarage(id, updateDto);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             // Trả về lỗi validation hoặc quyền truy cập
@@ -93,7 +83,8 @@ public class GarageController {
             GarageResponseDto response = garageService.getGarageById(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            e.printStackTrace(); // In ra lỗi
+            return ResponseEntity.notFound().build(); // hoặc .status(500).body(null)
         }
     }
 
@@ -108,7 +99,7 @@ public class GarageController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
             User currentUser = userDetails.getUser();
-            
+
             GarageResponseDto response = garageService.getGarageByOwner(currentUser);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -164,8 +155,8 @@ public class GarageController {
      */
     @GetMapping("/nearby")
     public ResponseEntity<List<GarageResponseDto>> findNearbyGarages(@RequestParam Double latitude,
-                                                                    @RequestParam Double longitude,
-                                                                    @RequestParam(defaultValue = "10.0") Double radius) {
+                                                                     @RequestParam Double longitude,
+                                                                     @RequestParam(defaultValue = "10.0") Double radius) {
         try {
             List<GarageResponseDto> response = garageService.findNearbyGarages(latitude, longitude, radius);
             return ResponseEntity.ok(response);
@@ -185,7 +176,7 @@ public class GarageController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
             User currentUser = userDetails.getUser();
-            
+
             garageService.deleteGarage(id, currentUser);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
@@ -222,4 +213,30 @@ public class GarageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PutMapping("/{id}/toggle-status")
+    public ResponseEntity<Garage> toggleStatus(@PathVariable Long id) {
+        try {
+            Garage garage = garageService.getGarageEntityById(id);
+
+            GarageStatus currentStatus = garage.getStatus();
+            GarageStatus newStatus;
+
+            if (currentStatus == null || currentStatus == GarageStatus.ACTIVE) {
+                newStatus = GarageStatus.INACTIVE;
+            } else {
+                newStatus = GarageStatus.ACTIVE;
+            }
+
+            garage.setStatus(newStatus);
+            Garage updatedGarage = garageService.saveGarage(garage);
+
+            return ResponseEntity.ok(updatedGarage);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 } 

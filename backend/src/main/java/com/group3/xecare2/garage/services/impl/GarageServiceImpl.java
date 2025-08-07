@@ -1,9 +1,13 @@
 // Hoang
 package com.group3.xecare2.garage.services.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.group3.xecare2.user.repositories.ReviewRepository;
+import com.group3.xecare2.user.entities.Review;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,38 +36,32 @@ public class GarageServiceImpl implements GarageServiceInterface {
 
     @Autowired
     private GarageRepository garageRepository;
-    
+
     @Autowired
     private GarageServiceRepository garageServiceRepository;
-    
+
     @Autowired
     private GarageVehicleTypeRepository garageVehicleTypeRepository;
-    
+
     @Autowired
     private ServiceRepository serviceRepository;
-    
+
     @Autowired
     private VehicleTypeRepository vehicleTypeRepository;
 
     @Override
-    public GarageResponseDto registerGarage(GarageRegistrationDto registrationDto, User owner) {
+    public GarageResponseDto registerGarage(GarageRegistrationDto registrationDto) {
         // Kiểm tra email và phone đã tồn tại chưa
         if (garageRepository.existsByEmail(registrationDto.getEmail())) {
             throw new IllegalArgumentException("Email đã được sử dụng bởi garage khác");
         }
-        
+
         if (garageRepository.existsByPhone(registrationDto.getPhone())) {
             throw new IllegalArgumentException("Số điện thoại đã được sử dụng bởi garage khác");
         }
-        
-        // Kiểm tra owner đã có garage chưa
-        if (garageRepository.findByOwner(owner).isPresent()) {
-            throw new IllegalArgumentException("Bạn đã có garage rồi");
-        }
-        
+
         // Tạo garage mới
         Garage garage = Garage.builder()
-                .owner(owner)
                 .name(registrationDto.getName())
                 .description(registrationDto.getDescription())
                 .address(registrationDto.getAddress())
@@ -73,57 +71,59 @@ public class GarageServiceImpl implements GarageServiceInterface {
                 .longitude(registrationDto.getLongitude())
                 .openTime(registrationDto.getOpenTime())
                 .closeTime(registrationDto.getCloseTime())
-                .status(GarageStatus.PENDING)
+                .status(GarageStatus.ACTIVE)
                 .isVerified(false)
                 .build();
-        
+
         garage = garageRepository.save(garage);
-        
+
         // Thêm các dịch vụ
         if (registrationDto.getServiceIds() != null) {
             for (Long serviceId : registrationDto.getServiceIds()) {
                 com.group3.xecare2.admin.entities.Services service = serviceRepository.findById(serviceId)
                         .orElseThrow(() -> new EntityNotFoundException("Dịch vụ không tồn tại: " + serviceId));
-                
+
                 GarageService garageService = GarageService.builder()
                         .garage(garage)
                         .service(service)
                         .isActive(true)
                         .build();
-                
+
                 garageServiceRepository.save(garageService);
             }
         }
-        
+
         // Thêm các loại xe hỗ trợ
         if (registrationDto.getVehicleTypeIds() != null) {
             for (Long vehicleTypeId : registrationDto.getVehicleTypeIds()) {
                 VehicleType vehicleType = vehicleTypeRepository.findById(vehicleTypeId)
                         .orElseThrow(() -> new EntityNotFoundException("Loại xe không tồn tại: " + vehicleTypeId));
-                
+
                 GarageVehicleType garageVehicleType = GarageVehicleType.builder()
                         .garage(garage)
                         .vehicleType(vehicleType)
                         .isActive(true)
                         .build();
-                
+
                 garageVehicleTypeRepository.save(garageVehicleType);
             }
         }
-        
+
         return convertToResponseDto(garage);
     }
 
+    private boolean areListsEqualIgnoreOrder(List<Long> list1, List<Long> list2) {
+        if (list1 == null || list2 == null) return false;
+        return new HashSet<>(list1).equals(new HashSet<>(list2));
+    }
+
+
     @Override
-    public GarageResponseDto updateGarage(Long garageId, GarageUpdateDto updateDto, User owner) {
+    public GarageResponseDto updateGarage(Long garageId, GarageUpdateDto updateDto) {
         Garage garage = garageRepository.findById(garageId)
                 .orElseThrow(() -> new EntityNotFoundException("Garage không tồn tại"));
-        
-        // Kiểm tra quyền sở hữu
-        if (!garage.getOwner().getId().equals(owner.getId())) {
-            throw new IllegalArgumentException("Bạn không có quyền cập nhật garage này");
-        }
-        
+
+
         // Cập nhật thông tin cơ bản
         if (updateDto.getName() != null) {
             garage.setName(updateDto.getName());
@@ -136,16 +136,16 @@ public class GarageServiceImpl implements GarageServiceInterface {
         }
         if (updateDto.getPhone() != null) {
             // Kiểm tra phone mới có trùng không
-            if (!updateDto.getPhone().equals(garage.getPhone()) && 
-                garageRepository.existsByPhone(updateDto.getPhone())) {
+            if (!updateDto.getPhone().equals(garage.getPhone()) &&
+                    garageRepository.existsByPhone(updateDto.getPhone())) {
                 throw new IllegalArgumentException("Số điện thoại đã được sử dụng bởi garage khác");
             }
             garage.setPhone(updateDto.getPhone());
         }
         if (updateDto.getEmail() != null) {
             // Kiểm tra email mới có trùng không
-            if (!updateDto.getEmail().equals(garage.getEmail()) && 
-                garageRepository.existsByEmail(updateDto.getEmail())) {
+            if (!updateDto.getEmail().equals(garage.getEmail()) &&
+                    garageRepository.existsByEmail(updateDto.getEmail())) {
                 throw new IllegalArgumentException("Email đã được sử dụng bởi garage khác");
             }
             garage.setEmail(updateDto.getEmail());
@@ -165,60 +165,86 @@ public class GarageServiceImpl implements GarageServiceInterface {
         if (updateDto.getImageUrl() != null) {
             garage.setImageUrl(updateDto.getImageUrl());
         }
-        
+
         garage = garageRepository.save(garage);
-        
+
         // Cập nhật dịch vụ nếu có
         if (updateDto.getServiceIds() != null) {
-            // Xóa tất cả dịch vụ cũ
-            List<GarageService> existingServices = garageServiceRepository.findByGarage(garage);
-            garageServiceRepository.deleteAll(existingServices);
-            
-            // Thêm dịch vụ mới
-            for (Long serviceId : updateDto.getServiceIds()) {
-                com.group3.xecare2.admin.entities.Services service = serviceRepository.findById(serviceId)
-                        .orElseThrow(() -> new EntityNotFoundException("Dịch vụ không tồn tại: " + serviceId));
-                
-                GarageService garageService = GarageService.builder()
-                        .garage(garage)
-                        .service(service)
-                        .isActive(true)
-                        .build();
-                
-                garageServiceRepository.save(garageService);
+            List<Long> currentServiceIds = garageServiceRepository.findByGarage(garage).stream()
+                    .map(gs -> gs.getService().getId())
+                    .collect(Collectors.toList());
+
+            if (!areListsEqualIgnoreOrder(updateDto.getServiceIds(), currentServiceIds)) {
+                // Xóa và thêm mới nếu có sự thay đổi
+                garageServiceRepository.deleteAllByGarage(garage);
+                garageServiceRepository.flush();
+                for (Long serviceId : updateDto.getServiceIds()) {
+                    com.group3.xecare2.admin.entities.Services service = serviceRepository.findById(serviceId)
+                            .orElseThrow(() -> new EntityNotFoundException("Dịch vụ không tồn tại: " + serviceId));
+                    GarageService garageService = GarageService.builder()
+                            .garage(garage)
+                            .service(service)
+                            .isActive(true)
+                            .build();
+                    garageServiceRepository.save(garageService);
+                }
             }
         }
-        
+
+
         // Cập nhật loại xe hỗ trợ nếu có
         if (updateDto.getVehicleTypeIds() != null) {
-            // Xóa tất cả loại xe cũ
-            List<GarageVehicleType> existingVehicleTypes = garageVehicleTypeRepository.findByGarage(garage);
-            garageVehicleTypeRepository.deleteAll(existingVehicleTypes);
-            
-            // Thêm loại xe mới
-            for (Long vehicleTypeId : updateDto.getVehicleTypeIds()) {
-                VehicleType vehicleType = vehicleTypeRepository.findById(vehicleTypeId)
-                        .orElseThrow(() -> new EntityNotFoundException("Loại xe không tồn tại: " + vehicleTypeId));
-                
-                GarageVehicleType garageVehicleType = GarageVehicleType.builder()
-                        .garage(garage)
-                        .vehicleType(vehicleType)
-                        .isActive(true)
-                        .build();
-                
-                garageVehicleTypeRepository.save(garageVehicleType);
+            List<Long> currentVehicleTypeIds = garageVehicleTypeRepository.findByGarage(garage).stream()
+                    .map(gvt -> gvt.getVehicleType().getId())
+                    .collect(Collectors.toList());
+
+            if (!areListsEqualIgnoreOrder(updateDto.getVehicleTypeIds(), currentVehicleTypeIds)) {
+                garageVehicleTypeRepository.deleteAllByGarage(garage);
+                garageVehicleTypeRepository.flush();
+                for (Long vehicleTypeId : updateDto.getVehicleTypeIds()) {
+                    VehicleType vehicleType = vehicleTypeRepository.findById(vehicleTypeId)
+                            .orElseThrow(() -> new EntityNotFoundException("Loại xe không tồn tại: " + vehicleTypeId));
+                    GarageVehicleType garageVehicleType = GarageVehicleType.builder()
+                            .garage(garage)
+                            .vehicleType(vehicleType)
+                            .isActive(true)
+                            .build();
+                    garageVehicleTypeRepository.save(garageVehicleType);
+                }
             }
         }
-        
+
+
         return convertToResponseDto(garage);
     }
 
     @Override
     public GarageResponseDto getGarageById(Long garageId) {
+        System.out.println(garageId);
         Garage garage = garageRepository.findById(garageId)
                 .orElseThrow(() -> new EntityNotFoundException("Garage không tồn tại"));
+        System.out.println(garage);
         return convertToResponseDto(garage);
     }
+
+    @Override
+    public List<GarageResponseDto> findAll() {
+        List<Garage> garages = garageRepository.findAll();
+        List<GarageResponseDto> responseDtos = new ArrayList<GarageResponseDto>();
+
+        for (Garage garage : garages) {
+            GarageResponseDto dto = convertToResponseDto(garage);
+            responseDtos.add(dto);
+        }
+
+        return responseDtos;
+    }
+
+    @Override
+    public Garage saveGarage(Garage garage) {
+        return garageRepository.save(garage);
+    }
+
 
     @Override
     public GarageResponseDto getGarageByOwner(User owner) {
@@ -263,11 +289,11 @@ public class GarageServiceImpl implements GarageServiceInterface {
     public void deleteGarage(Long garageId, User owner) {
         Garage garage = garageRepository.findById(garageId)
                 .orElseThrow(() -> new EntityNotFoundException("Garage không tồn tại"));
-        
+
         if (!garage.getOwner().getId().equals(owner.getId())) {
             throw new IllegalArgumentException("Bạn không có quyền xóa garage này");
         }
-        
+
         garageRepository.delete(garage);
     }
 
@@ -292,7 +318,10 @@ public class GarageServiceImpl implements GarageServiceInterface {
         return garageRepository.findByOwner(owner)
                 .orElseThrow(() -> new EntityNotFoundException("Bạn chưa có garage"));
     }
-    
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
     private GarageResponseDto convertToResponseDto(Garage garage) {
         // Lấy danh sách dịch vụ
         List<GarageResponseDto.GarageServiceDto> services = garageServiceRepository.findByGarage(garage)
@@ -307,7 +336,18 @@ public class GarageServiceImpl implements GarageServiceInterface {
                         .isActive(gs.getIsActive())
                         .build())
                 .collect(Collectors.toList());
-        
+
+        List<Review> reviews = reviewRepository.findByGarage(garage);
+
+        double averageRating = 0;
+        int reviewCount = reviews.size();
+
+        if (reviewCount > 0) {
+            averageRating = reviews.stream()
+                    .mapToInt(Review::getRating)
+                    .average()
+                    .orElse(0.0);
+        }
         // Lấy danh sách loại xe
         List<GarageResponseDto.GarageVehicleTypeDto> vehicleTypes = garageVehicleTypeRepository.findByGarage(garage)
                 .stream()
@@ -319,7 +359,7 @@ public class GarageServiceImpl implements GarageServiceInterface {
                         .isActive(gvt.getIsActive())
                         .build())
                 .collect(Collectors.toList());
-        
+
         return GarageResponseDto.builder()
                 .id(garage.getId())
                 .name(garage.getName())
@@ -335,11 +375,10 @@ public class GarageServiceImpl implements GarageServiceInterface {
                 .isVerified(garage.getIsVerified())
                 .status(garage.getStatus())
                 .createdAt(garage.getCreatedAt())
-                .ownerId(garage.getOwner().getId())
-                .ownerName(garage.getOwner().getName())
-                .ownerEmail(garage.getOwner().getEmail())
                 .services(services)
                 .vehicleTypes(vehicleTypes)
+                .averageRating(averageRating)
+                .reviewCount(reviewCount)
                 .build();
     }
 } 

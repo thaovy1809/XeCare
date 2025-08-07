@@ -1,6 +1,7 @@
 // Hoang
 package com.group3.xecare2.garage.repositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,9 @@ public interface GarageRepository extends JpaRepository<Garage, Long> {
     
     // Tìm garage theo số điện thoại
     Optional<Garage> findByPhone(String phone);
-    
+
+    long countByCreatedAtBetween(LocalDateTime from, LocalDateTime to);
+
     // Tìm garage theo trạng thái
     List<Garage> findByStatus(GarageStatus status);
     

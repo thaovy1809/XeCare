@@ -28,4 +28,6 @@ public interface GarageServiceRepository extends JpaRepository<GarageService, Lo
     
     // Kiểm tra garage đã có dịch vụ này chưa
     boolean existsByGarageAndService(Garage garage, Services service);
+
+    void deleteAllByGarage(Garage garage);
 } 

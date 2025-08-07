@@ -60,7 +60,7 @@ CREATE TABLE `appointment_services` (
   KEY `FK68fbfnf0iy7uq0tfb5mjmm2hx` (`service_id`),
   CONSTRAINT `FK68fbfnf0iy7uq0tfb5mjmm2hx` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`),
   CONSTRAINT `FK7smp9csy21h26g51aii9gvfn8` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`appointment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,6 +69,7 @@ CREATE TABLE `appointment_services` (
 
 LOCK TABLES `appointment_services` WRITE;
 /*!40000 ALTER TABLE `appointment_services` DISABLE KEYS */;
+INSERT INTO `appointment_services` VALUES (1,100000.00,1,1),(2,200000.00,1,2),(3,150000.00,2,1);
 /*!40000 ALTER TABLE `appointment_services` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -97,7 +98,7 @@ CREATE TABLE `appointments` (
   CONSTRAINT `FK886ced1atxgvnf1o3oxtj5m4s` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `FKh8ndlwfi7rbi2pjsajnp3k5rl` FOREIGN KEY (`garage_id`) REFERENCES `garages` (`id`),
   CONSTRAINT `FKs769arx5elbhwmv5qypovaq6t` FOREIGN KEY (`vehicle_type_id`) REFERENCES `vehicle_types` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,6 +107,7 @@ CREATE TABLE `appointments` (
 
 LOCK TABLES `appointments` WRITE;
 /*!40000 ALTER TABLE `appointments` DISABLE KEYS */;
+INSERT INTO `appointments` VALUES (1,'2025-08-06 00:00:00.000000','2025-07-07 00:00:00.000000','Sửa ok',NULL,'Sửa ok','COMPLETED',1,1,1),(2,'2025-07-07 00:00:00.000000','2025-06-07 00:00:00.000000','Ổn áp',NULL,'Ổn áp','CANCELLED',1,1,2);
 /*!40000 ALTER TABLE `appointments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -253,7 +255,7 @@ CREATE TABLE `garage_services` (
   CONSTRAINT `FK9hkjue81arnc0rjmg9nssekan` FOREIGN KEY (`garage_id`) REFERENCES `garages` (`id`),
   CONSTRAINT `FKjfgaixx1iu6f5kkvdb1305ils` FOREIGN KEY (`service_type_id`) REFERENCES `garage_service_types` (`id`),
   CONSTRAINT `FKjge5s26k0v163eoh033kao21w` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -262,7 +264,7 @@ CREATE TABLE `garage_services` (
 
 LOCK TABLES `garage_services` WRITE;
 /*!40000 ALTER TABLE `garage_services` DISABLE KEYS */;
-INSERT INTO `garage_services` VALUES (1,120000.00,45,_binary '',1,1,1),(2,150000.00,60,_binary '',1,1,2),(3,200000.00,50,_binary '',1,2,3),(4,130000.00,40,_binary '',2,1,1),(5,170000.00,55,_binary '',2,2,4),(6,220000.00,70,_binary '',2,3,5),(7,160000.00,60,_binary '',3,1,2),(8,190000.00,50,_binary '',3,2,3),(9,250000.00,75,_binary '',3,3,6),(10,120000.00,45,_binary '',4,1,1),(11,180000.00,60,_binary '',4,4,7),(12,300000.00,90,_binary '',4,5,8);
+INSERT INTO `garage_services` VALUES (1,120000.00,45,_binary '',1,1,1),(2,150000.00,60,_binary '',1,1,2),(3,200000.00,50,_binary '',1,2,3),(4,130000.00,40,_binary '',2,1,1),(5,170000.00,55,_binary '',2,2,4),(6,220000.00,70,_binary '',2,3,5),(7,160000.00,60,_binary '',3,1,2),(8,190000.00,50,_binary '',3,2,3),(9,250000.00,75,_binary '',3,3,6),(10,120000.00,45,_binary '',4,1,1),(11,180000.00,60,_binary '',4,4,7),(12,300000.00,90,_binary '',4,5,8),(15,NULL,NULL,_binary '',12,NULL,1),(16,NULL,NULL,_binary '',12,NULL,3),(22,NULL,NULL,_binary '',10,NULL,3),(23,NULL,NULL,_binary '',13,NULL,4),(24,NULL,NULL,_binary '',13,NULL,5);
 /*!40000 ALTER TABLE `garage_services` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -314,7 +316,7 @@ CREATE TABLE `garage_vehicle_types` (
   KEY `FKe9v3d4fdtw3lx0d5ukh5xqndl` (`vehicle_type_id`),
   CONSTRAINT `FKe9v3d4fdtw3lx0d5ukh5xqndl` FOREIGN KEY (`vehicle_type_id`) REFERENCES `vehicle_types` (`id`),
   CONSTRAINT `FKo58wt6ovhut4xa6o67cyhc1qh` FOREIGN KEY (`garage_id`) REFERENCES `garages` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,6 +325,7 @@ CREATE TABLE `garage_vehicle_types` (
 
 LOCK TABLES `garage_vehicle_types` WRITE;
 /*!40000 ALTER TABLE `garage_vehicle_types` DISABLE KEYS */;
+INSERT INTO `garage_vehicle_types` VALUES (3,_binary '',12,7),(4,_binary '',12,8),(7,_binary '',10,4),(8,_binary '',1,1),(9,_binary '',13,5);
 /*!40000 ALTER TABLE `garage_vehicle_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -348,11 +351,11 @@ CREATE TABLE `garages` (
   `open_time` time(6) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `status` enum('ACTIVE','INACTIVE','PENDING') DEFAULT NULL,
-  `user_id` int NOT NULL,
+  `user_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKnkxkyoc52o4qwft37o2l29x2x` (`user_id`),
   CONSTRAINT `FKnkxkyoc52o4qwft37o2l29x2x` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -361,7 +364,7 @@ CREATE TABLE `garages` (
 
 LOCK TABLES `garages` WRITE;
 /*!40000 ALTER TABLE `garages` DISABLE KEYS */;
-INSERT INTO `garages` VALUES (1,'101 Lê Lợi, Quận 1, TP.HCM','18:00:00.000000','2025-07-31 22:01:38.350581','Garage chuyên sửa xe tay ga và ô tô.','garage3@gmail.com','https://example.com/garage3.jpg',_binary '',10.775,106.7,'Garage Lê Lợi','08:00:00.000000','0903001001','ACTIVE',3),(2,'55 Nguyễn Văn Cừ, Quận 5, TP.HCM','19:00:00.000000','2025-07-31 22:01:38.350581','Dịch vụ bảo trì nhanh và thân thiện.','garage10@example.com','https://example.com/garage10.jpg',_binary '\0',10.755,106.66,'Garage Văn Cừ','07:30:00.000000','0903001002','PENDING',8),(3,'240 Hai Bà Trưng, Quận 3, TP.HCM','17:30:00.000000','2025-07-31 22:01:38.350581','Chuyên sửa chữa xe doanh nghiệp.','garage11@example.com','https://example.com/garage11.jpg',_binary '',10.785,106.688,'Garage Hai Bà Trưng','08:15:00.000000','0903001003','ACTIVE',9),(4,'12 Nguyễn Thị Minh Khai, Quận 1, TP.HCM','18:30:00.000000','2025-07-31 22:01:38.350581','Garage có dịch vụ giao nhận tận nơi.','garage12@example.com','https://example.com/garage12.jpg',_binary '',10.773,106.693,'Garage Minh Khai','08:00:00.000000','0903001004','ACTIVE',10),(5,'32 Dương Bá Trạc, Quận 8, TP.HCM','18:45:00.000000','2025-07-31 22:01:38.350581','Thay nhớt, rửa xe, kiểm tra tổng quát.','garage13@example.com','https://example.com/garage13.jpg',_binary '\0',10.735,106.682,'Garage Dương Bá Trạc','07:45:00.000000','0903001005','PENDING',11),(6,'188 Trường Chinh, Tân Bình, TP.HCM','17:00:00.000000','2025-07-31 22:01:38.350581','Dịch vụ nhanh, chuyên nghiệp.','garage14@example.com','https://example.com/garage14.jpg',_binary '',10.803,106.63,'Garage Trường Chinh','08:30:00.000000','0903001006','ACTIVE',12),(7,'90 Lũy Bán Bích, Tân Phú, TP.HCM','18:15:00.000000','2025-07-31 22:01:38.350581','Chuyên điện - máy - điều hòa xe.','garage15@example.com','https://example.com/garage15.jpg',_binary '',10.786,106.62,'Garage Lũy Bán Bích','08:00:00.000000','0903001007','ACTIVE',13),(8,'290 Nguyễn Oanh, Gò Vấp, TP.HCM','18:00:00.000000','2025-07-31 22:01:38.350581','Sửa chữa đa dạng dòng xe.','garage16@example.com','https://example.com/garage16.jpg',_binary '\0',10.832,106.673,'Garage Nguyễn Oanh','07:30:00.000000','0903001008','INACTIVE',14),(9,'48 Phan Xích Long, Phú Nhuận, TP.HCM','19:00:00.000000','2025-07-31 22:01:38.350581','Dịch vụ sửa chữa và rửa xe cao cấp.','garage17@example.com','https://example.com/garage17.jpg',_binary '',10.797,106.684,'Garage Phan Xích Long','08:00:00.000000','0903001009','ACTIVE',15),(10,'123 Nguyễn Ảnh Thủ, Quận 12, TP.HCM','18:00:00.000000','2025-07-31 22:01:38.350581','Chuyên thay thế linh kiện chính hãng.','garage18@example.com','https://example.com/garage18.jpg',_binary '\0',10.86,106.66,'Garage Nguyễn Ảnh Thủ','08:00:00.000000','0903001010','PENDING',16);
+INSERT INTO `garages` VALUES (1,'101 Lê Lợi, Quận 1, TP.HCM','18:00:00.000000','2025-07-31 22:01:38.350581','Garage chuyên sửa xe tay ga và ô tô.','leloi@gmail.com','https://example.com/garage3.jpg',_binary '',10.775,106.7,'Garage Lê Lợi','08:00:00.000000','0903001001','ACTIVE',3),(2,'55 Nguyễn Văn Cừ, Quận 5, TP.HCM','19:00:00.000000','2025-07-31 22:01:38.350581','Dịch vụ bảo trì nhanh và thân thiện.','garage10@example.com','https://example.com/garage10.jpg',_binary '\0',10.755,106.66,'Garage Văn Cừ','07:30:00.000000','0903001002','PENDING',8),(3,'240 Hai Bà Trưng, Quận 3, TP.HCM','17:30:00.000000','2025-07-31 22:01:38.350581','Chuyên sửa chữa xe doanh nghiệp.','garage11@example.com','https://example.com/garage11.jpg',_binary '',10.785,106.688,'Garage Hai Bà Trưng','08:15:00.000000','0903001003','ACTIVE',9),(4,'12 Nguyễn Thị Minh Khai, Quận 1, TP.HCM','18:30:00.000000','2025-07-31 22:01:38.350581','Garage có dịch vụ giao nhận tận nơi.','garage12@example.com','https://example.com/garage12.jpg',_binary '',10.773,106.693,'Garage Minh Khai','08:00:00.000000','0903001004','ACTIVE',10),(5,'32 Dương Bá Trạc, Quận 8, TP.HCM','18:45:00.000000','2025-07-31 22:01:38.350581','Thay nhớt, rửa xe, kiểm tra tổng quát.','garage13@example.com','https://example.com/garage13.jpg',_binary '\0',10.735,106.682,'Garage Dương Bá Trạc','07:45:00.000000','0903001005','ACTIVE',11),(6,'188 Trường Chinh, Tân Bình, TP.HCM','17:00:00.000000','2025-07-31 22:01:38.350581','Dịch vụ nhanh, chuyên nghiệp.','garage14@example.com','https://example.com/garage14.jpg',_binary '',10.803,106.63,'Garage Trường Chinh','08:30:00.000000','0903001006','ACTIVE',12),(7,'90 Lũy Bán Bích, Tân Phú, TP.HCM','18:15:00.000000','2025-07-31 22:01:38.350581','Chuyên điện - máy - điều hòa xe.','garage15@example.com','https://example.com/garage15.jpg',_binary '',10.786,106.62,'Garage Lũy Bán Bích','08:00:00.000000','0903001007','ACTIVE',13),(8,'290 Nguyễn Oanh, Gò Vấp, TP.HCM','18:00:00.000000','2025-07-31 22:01:38.350581','Sửa chữa đa dạng dòng xe.','garage16@example.com','https://example.com/garage16.jpg',_binary '\0',10.832,106.673,'Garage Nguyễn Oanh','07:30:00.000000','0903001008','ACTIVE',14),(9,'48 Phan Xích Long, Phú Nhuận, TP.HCM','19:00:00.000000','2025-07-31 22:01:38.350581','Dịch vụ sửa chữa và rửa xe cao cấp.','garage17@example.com','https://example.com/garage17.jpg',_binary '',10.797,106.684,'Garage Phan Xích Long','08:00:00.000000','0903001009','ACTIVE',15),(10,'123 Nguyễn Ảnh Thủ, Quận 12, TP.HCM','18:00:00.000000','2025-07-31 22:01:38.350581','Chuyên thay thế linh kiện chính hãng.','garage18@example.com','https://example.com/garage18.jpg',_binary '\0',10.86,106.66,'Garage Nguyễn Ảnh Thủ','08:00:00.000000','0903001010','ACTIVE',16),(12,'Dong Da','21:00:00.000000','2025-08-07 10:30:59.062074','Garage ABC','abc@gmail.com','https://example.com/garage18.jpg',_binary '\0',12,32,'Garage ABC','07:00:00.000000','0947134196','PENDING',NULL),(13,'Hà Nội','19:00:00.000000','2025-08-07 14:02:24.235323','','miclebim12@gmail.com',NULL,_binary '\0',13,32,'Gara Phạm Văn Đồng','07:00:00.000000','0947134111','ACTIVE',NULL);
 /*!40000 ALTER TABLE `garages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -466,6 +469,7 @@ CREATE TABLE `reviews` (
   `appointment_id` int NOT NULL,
   `garage_id` bigint DEFAULT NULL,
   `user_id` int NOT NULL,
+  `status` int DEFAULT NULL,
   PRIMARY KEY (`review_id`),
   KEY `FKfhaj6kqx2pjpn6eambt0pa1nm` (`appointment_id`),
   KEY `FK9bye5gjgtcwj15hceklasnsjk` (`garage_id`),
@@ -473,7 +477,7 @@ CREATE TABLE `reviews` (
   CONSTRAINT `FK9bye5gjgtcwj15hceklasnsjk` FOREIGN KEY (`garage_id`) REFERENCES `garages` (`id`),
   CONSTRAINT `FKcgy7qjc1r99dp117y9en6lxye` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `FKfhaj6kqx2pjpn6eambt0pa1nm` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`appointment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -482,6 +486,7 @@ CREATE TABLE `reviews` (
 
 LOCK TABLES `reviews` WRITE;
 /*!40000 ALTER TABLE `reviews` DISABLE KEYS */;
+INSERT INTO `reviews` VALUES (1,'Sửa ok','2025-07-07 00:00:00.000000',5,1,1,1,0);
 /*!40000 ALTER TABLE `reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -688,7 +693,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'hồ chí minh','2025-06-27 04:30:23','user@gmail.com','uploads/user1.png',NULL,NULL,'Nguyen Văn A','$2a$10$ejTGfnXSvq2YHaqRqL8y1e0ACaMigMad2FtZ6T.VaUS26g2HhCNv2','1234567892','user',0),(2,'hồ chí minh','2025-07-27 07:26:01','admin@gmail.com',NULL,NULL,NULL,'admin','$2a$10$lqyVJZtrTVb8nIzrUNWCQODKF6QIY0KqbPLNzgNG6KsJLq56vRoNa','123456','admin',1),(3,'hồ chí minh','2025-07-27 07:26:55','garage@gmail.com',NULL,NULL,NULL,'garage','$2a$10$O9pHRFgta9dNOFzCLGatqeLtw7FXHIo2KiFUg3NXBWAjSOEabBbO.','123456222333','garage',1),(4,'Hà Nội','2025-07-28 15:44:15','user2@gmail.com',NULL,NULL,NULL,'Trần Thị B','$2a$10$4eT9fQMumlgsl.giiDGNz./TMDzo11LeKDlM9.ge/8rGDWjUubcJG','0900000002','user',1),(5,'Đà Nẵng','2025-07-28 15:45:37','user3@gmail.com',NULL,NULL,NULL,'Lê Văn C','$2a$10$PwZDyPSy1DSLFq9d1JrXHeUhKtkxM8ydWqsKdAfHGO/gaU6ZH7TRe','0900000003','user',1),(6,'Cần Thơ','2025-07-28 15:45:46','user4@gmail.com',NULL,NULL,NULL,'Phạm Thị Diên','$2a$10$mM6ASixmTeuq3yd4G5tFx.bZXGoEe6UivB028qJS1jCRJERHZV5Ri','0900000004','user',1),(7,'Biên Hòa','2025-07-28 15:45:53','user5@gmail.com',NULL,NULL,NULL,'Hoàng Văn E','$2a$10$LeIQI2Xokk/wZ74GabaM.uTc3dZjC3D/7oA8d/HXuag6Ljm8RjTo.','0900000005','user',1),(8,'Vũng Tàu','2025-07-28 15:46:05','user6@gmail.com',NULL,NULL,NULL,'Đặng Thị F','$2a$10$dYqn/YhfsgXC7QQO96oW1ekiQQ4bF.vADck2VlgHHQHNVJPLQqFB6','0900000006','garage',1),(9,'Huế','2025-07-28 15:46:12','user7@gmail.com',NULL,NULL,NULL,'Bùi Văn G','$2a$10$enoYwyOen30va3EkhwQnNubJmjUNQzVyinrVLZArztRyuSTTHh5MO','0900000007','garage',1),(10,'Hải Phòng','2025-07-28 15:46:18','user8@gmail.com',NULL,NULL,NULL,'Vũ Thị H','$2a$10$wV3H6aJCUlY9KfnDgrzQIOaXmIL/czMTyLpJ0Pp.w8cyNOfl942p.','0900000008','garage',1),(11,'Nha Trang','2025-07-28 15:46:26','user9@gmail.com',NULL,NULL,NULL,'Mai Văn I','$2a$10$yOpCkEQ2mfgVY9B7F6/gO.ORPNi2QihnjX47IVJIkS23O6HgP81Z.','0900000009','garage',1),(12,'Đà Lạt','2025-07-28 15:46:32','user10@gmail.com',NULL,NULL,NULL,'Ngô Thị Jack','$2a$10$OwIuR55RopBw6XD9sWRQh.3YhE1DfJlADM6OZwHqGYgi3aJT.j36i','0900000010','garage',1),(13,'Thanh Hóa','2025-07-28 15:46:39','user11@gmail.com',NULL,NULL,NULL,'Phan Văn K','$2a$10$csEtmnOev2CAqm0jttsiIOXvUFNhBZubXAI50NIs8zKITCgsugtvO','0900000011','garage',1),(14,'Quảng Ninh','2025-07-28 15:46:45','user12@gmail.com',NULL,NULL,NULL,'Đỗ Thị L','$2a$10$Kqsh2aBL4UzPOWsWhygyXOIrjZu.rWQouuzeOAmCLrrz7nYFgBwC.','0900000012','garage',1),(15,'Bắc Giang','2025-07-28 15:46:57','user13@gmail.com',NULL,NULL,NULL,'Trịnh Văn M','$2a$10$38t.SvMEsj9IP97MAOGEiu9e/2hsyg44sf4s4ncEXjhLt6ej5Z0bm','0900000013','garage',1),(16,'Nam Định','2025-07-28 15:47:06','user14@gmail.com',NULL,NULL,NULL,'Lương Thị N','$2a$10$N0Q585lL0vYWF7DMxnoy7ewojFO.F.jIdMOKD8pyTSYJXII44wqN2','0900000014','garage',1),(17,'Dong Da','2025-08-04 08:01:09','nta@gmail.com',NULL,NULL,NULL,'Nguyễn Thuỳ Trang','$2a$10$28nUoawOTegvaVtLt2M.Wui./kNrRMgxffvLIbgKPW6yjzHCtBZu6','0947134196','user',1),(18,'HN','2025-08-04 08:16:03','thaovy@gmail.com',NULL,NULL,NULL,'ThaoVy123','$2a$10$jqEuXhEsh1BNEwUNMgFn6.YVE/XSHQID/Z11EMj4w7U7MFHg2f34e','0987666111','user',1);
+INSERT INTO `users` VALUES (1,'hồ chí minh','2025-06-27 04:30:23','user@gmail.com','uploads/user1.png',NULL,NULL,'Nguyen Văn A','$2a$10$ejTGfnXSvq2YHaqRqL8y1e0ACaMigMad2FtZ6T.VaUS26g2HhCNv2','1234567892','user',1),(2,'hồ chí minh','2025-07-27 07:26:01','admin@gmail.com',NULL,NULL,NULL,'admin','$2a$10$lqyVJZtrTVb8nIzrUNWCQODKF6QIY0KqbPLNzgNG6KsJLq56vRoNa','123456','admin',1),(3,'hồ chí minh','2025-07-27 07:26:55','garage@gmail.com',NULL,NULL,NULL,'garage','$2a$10$O9pHRFgta9dNOFzCLGatqeLtw7FXHIo2KiFUg3NXBWAjSOEabBbO.','123456222333','garage',1),(4,'Hà Nội','2025-07-28 15:44:15','user2@gmail.com',NULL,NULL,NULL,'Trần Thị B','$2a$10$4eT9fQMumlgsl.giiDGNz./TMDzo11LeKDlM9.ge/8rGDWjUubcJG','0900000002','user',1),(5,'Đà Nẵng','2025-07-28 15:45:37','user3@gmail.com',NULL,NULL,NULL,'Lê Văn C','$2a$10$PwZDyPSy1DSLFq9d1JrXHeUhKtkxM8ydWqsKdAfHGO/gaU6ZH7TRe','0900000003','user',1),(6,'Cần Thơ','2025-07-28 15:45:46','user4@gmail.com',NULL,NULL,NULL,'Phạm Thị Diên','$2a$10$mM6ASixmTeuq3yd4G5tFx.bZXGoEe6UivB028qJS1jCRJERHZV5Ri','0900000004','user',1),(7,'Biên Hòa','2025-07-28 15:45:53','user5@gmail.com',NULL,NULL,NULL,'Hoàng Văn E','$2a$10$LeIQI2Xokk/wZ74GabaM.uTc3dZjC3D/7oA8d/HXuag6Ljm8RjTo.','0900000005','user',1),(8,'Vũng Tàu','2025-07-28 15:46:05','user6@gmail.com',NULL,NULL,NULL,'Đặng Thị F','$2a$10$dYqn/YhfsgXC7QQO96oW1ekiQQ4bF.vADck2VlgHHQHNVJPLQqFB6','0900000006','garage',1),(9,'Huế','2025-07-28 15:46:12','user7@gmail.com',NULL,NULL,NULL,'Bùi Văn G','$2a$10$enoYwyOen30va3EkhwQnNubJmjUNQzVyinrVLZArztRyuSTTHh5MO','0900000007','garage',1),(10,'Hải Phòng','2025-07-28 15:46:18','user8@gmail.com',NULL,NULL,NULL,'Vũ Thị H','$2a$10$wV3H6aJCUlY9KfnDgrzQIOaXmIL/czMTyLpJ0Pp.w8cyNOfl942p.','0900000008','garage',1),(11,'Nha Trang','2025-07-28 15:46:26','user9@gmail.com',NULL,NULL,NULL,'Mai Văn I','$2a$10$yOpCkEQ2mfgVY9B7F6/gO.ORPNi2QihnjX47IVJIkS23O6HgP81Z.','0900000009','garage',1),(12,'Đà Lạt','2025-07-28 15:46:32','user10@gmail.com',NULL,NULL,NULL,'Ngô Thị Jack','$2a$10$OwIuR55RopBw6XD9sWRQh.3YhE1DfJlADM6OZwHqGYgi3aJT.j36i','0900000010','garage',1),(13,'Thanh Hóa','2025-07-28 15:46:39','user11@gmail.com',NULL,NULL,NULL,'Phan Văn K','$2a$10$csEtmnOev2CAqm0jttsiIOXvUFNhBZubXAI50NIs8zKITCgsugtvO','0900000011','garage',1),(14,'Quảng Ninh','2025-07-28 15:46:45','user12@gmail.com',NULL,NULL,NULL,'Đỗ Thị L','$2a$10$Kqsh2aBL4UzPOWsWhygyXOIrjZu.rWQouuzeOAmCLrrz7nYFgBwC.','0900000012','garage',1),(15,'Bắc Giang','2025-07-28 15:46:57','user13@gmail.com',NULL,NULL,NULL,'Trịnh Văn M','$2a$10$38t.SvMEsj9IP97MAOGEiu9e/2hsyg44sf4s4ncEXjhLt6ej5Z0bm','0900000013','garage',1),(16,'Nam Định','2025-07-28 15:47:06','user14@gmail.com',NULL,NULL,NULL,'Lương Thị N','$2a$10$N0Q585lL0vYWF7DMxnoy7ewojFO.F.jIdMOKD8pyTSYJXII44wqN2','0900000014','garage',1),(17,'Dong Da','2025-08-04 08:01:09','nta@gmail.com',NULL,NULL,NULL,'Nguyễn Thuỳ Trang','$2a$10$28nUoawOTegvaVtLt2M.Wui./kNrRMgxffvLIbgKPW6yjzHCtBZu6','0947134196','user',1),(18,'HN','2025-08-04 08:16:03','thaovy@gmail.com',NULL,NULL,NULL,'ThaoVy123','$2a$10$jqEuXhEsh1BNEwUNMgFn6.YVE/XSHQID/Z11EMj4w7U7MFHg2f34e','0987666111','user',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -735,4 +740,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-08-04 15:41:31
+-- Dump completed on 2025-08-07 14:04:02

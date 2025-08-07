@@ -51,6 +51,9 @@ public class Review {
 
     private LocalDateTime createdAt;
 
+    private Integer status;
+
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

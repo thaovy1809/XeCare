@@ -11,87 +11,105 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useState } from "react"
 import { Search, Star, Eye, Check, X, Flag, MessageSquare } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useEffect } from "react"
+import { MoreHorizontal, MapPin, Building } from "lucide-react"
+import { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
+import { format } from 'date-fns';
+export interface ReviewDto {
+  id: number;
+  appointmentId: number;
+  userId: number;
+  userName?: string;
+  garageId?: number;
+  garageName?: string;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+  status: number;
+}
 
-// Mock data
-const mockReviews = [
-  {
-    id: 1,
-    user: "Nguyễn Văn A",
-    garage: "Garage Thành Công",
-    rating: 5,
-    comment: "Dịch vụ tuyệt vời, nhân viên thân thiện và chuyên nghiệp. Xe được sửa chữa rất tốt.",
-    date: "2024-12-20",
-    status: "approved",
-    images: ["image1.jpg"],
-  },
-  {
-    id: 2,
-    user: "Trần Thị B",
-    garage: "Garage ABC",
-    rating: 1,
-    comment: "Dịch vụ tệ, thái độ không tốt. Không khuyến khích sử dụng.",
-    date: "2024-12-19",
-    status: "pending",
-    images: [],
-    reported: true,
-  },
-  {
-    id: 3,
-    user: "Lê Văn C",
-    garage: "Garage XYZ",
-    rating: 4,
-    comment: "Garage ổn, giá cả hợp lý. Tuy nhiên thời gian chờ hơi lâu.",
-    date: "2024-12-18",
-    status: "approved",
-    images: [],
-  },
-  {
-    id: 4,
-    user: "Phạm Thị D",
-    garage: "Garage 24/7",
-    rating: 5,
-    comment: "Cứu hộ nhanh chóng, kỹ thuật viên giỏi. Rất hài lòng với dịch vụ.",
-    date: "2024-12-17",
-    status: "approved",
-    images: ["image2.jpg", "image3.jpg"],
-  },
-  {
-    id: 5,
-    user: "Hoàng Văn E",
-    garage: "Garage Pro",
-    rating: 2,
-    comment: "Chất lượng không như mong đợi, giá hơi cao so với chất lượng.",
-    date: "2024-12-16",
-    status: "rejected",
-    images: [],
-  },
-]
 
 export default function AdminReviewsPage() {
-  const [reviews, setReviews] = useState(mockReviews)
+  const [reviews, setReviews] = useState<ReviewDto[]>([]);
+
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [ratingFilter, setRatingFilter] = useState("all")
   const [selectedReview, setSelectedReview] = useState<any>(null)
 
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchGarages = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/v1/reviews")
+      if (!res.ok) throw new Error("Failed to fetch users")
+      const data = await res.json()
+      setReviews(data)
+    } catch (err: any) {
+      setError(err.message || "Lỗi không xác định")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchReviews = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/v1/reviews")
+      if (!res.ok) throw new Error("Failed to fetch garages")
+      const data = await res.json()
+      setReviews(data)
+    } catch (err: any) {
+      setError(err.message || "Lỗi không xác định")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/v1/reviews")
+        if (!res.ok) throw new Error("Failed to fetch garages")
+        const data = await res.json()
+        setReviews(data)
+      } catch (err: any) {
+        setError(err.message || "Lỗi không xác định")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchReviews()
+  }, [])
+
   const filteredReviews = reviews.filter((review) => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+
     const matchesSearch =
-      review.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.garage.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.comment.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || review.status === statusFilter
-    const matchesRating = ratingFilter === "all" || review.rating.toString() === ratingFilter
+      (review.userName?.toLowerCase().includes(lowerSearchTerm) ?? false) ||
+      (review.garageName?.toLowerCase().includes(lowerSearchTerm) ?? false) ||
+      (review.comment?.toLowerCase().includes(lowerSearchTerm) ?? false);
 
-    return matchesSearch && matchesStatus && matchesRating
-  })
+    const matchesStatus =
+      statusFilter === "all" || review.status?.toString() === statusFilter;
 
-  const getStatusBadge = (status: string) => {
+    const matchesRating =
+      ratingFilter === "all" || review.rating.toString() === ratingFilter;
+
+    return matchesSearch && matchesStatus && matchesRating;
+  });
+
+
+  const getStatusBadge = (status: number) => {
     switch (status) {
-      case "approved":
+      case 1:
         return <Badge className="bg-green-100 text-green-700">Đã duyệt</Badge>
-      case "pending":
+      case -1:
         return <Badge className="bg-yellow-100 text-yellow-700">Chờ duyệt</Badge>
-      case "rejected":
+      case 0:
         return <Badge className="bg-red-100 text-red-700">Từ chối</Badge>
       default:
         return <Badge className="bg-gray-100 text-gray-700">Không xác định</Badge>
@@ -104,19 +122,37 @@ export default function AdminReviewsPage() {
     ))
   }
 
-  const handleApprove = (reviewId: number) => {
-    setReviews(reviews.map((review) => (review.id === reviewId ? { ...review, status: "approved" } : review)))
-  }
+  const handleSetStatus = async (reviewId: number, status: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/reviews/${reviewId}/set-status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
 
-  const handleReject = (reviewId: number) => {
-    setReviews(reviews.map((review) => (review.id === reviewId ? { ...review, status: "rejected" } : review)))
-  }
+      if (!response.ok) {
+        throw new Error('Failed to set review status');
+      }
+      if(status === 1) {
+        toast.success("Duyệt đánh giá thành công!")
+      } else {
+        toast.success("Từ chối đánh giá thành công!")
+      }
+
+      fetchReviews();
+    } catch (error) {
+      console.error('Error setting review status:', error);
+    }
+  };
+
 
   const stats = {
     total: reviews.length,
-    approved: reviews.filter((r) => r.status === "approved").length,
-    pending: reviews.filter((r) => r.status === "pending").length,
-    reported: reviews.filter((r) => r.reported).length,
+    approved: reviews.filter((r) => r.status === 1).length,
+    pending: reviews.filter((r) => r.status === -1).length,
+    reported: reviews.filter((r) => r.status == 0).length,
   }
 
   return (
@@ -229,12 +265,15 @@ export default function AdminReviewsPage() {
                   <TableRow key={review.id}>
                     <TableCell>
                       <div>
-                        <p className="font-medium text-slate-900">{review.user}</p>
-                        <p className="text-sm text-slate-500">{review.date}</p>
+                        <p className="font-medium text-slate-900">{review.userName}</p>
+                        <p className="text-sm text-slate-500">{format(new Date(review.createdAt), 'dd/MM/yyyy')}</p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <p className="font-medium text-slate-700">{review.garage}</p>
+                      <p className="font-medium text-slate-700">{review.garageName}</p>
+                    </TableCell>
+                    <TableCell>
+                      <p className="font-medium text-slate-700">{review.comment}</p>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-1">
@@ -242,20 +281,7 @@ export default function AdminReviewsPage() {
                         <span className="ml-2 text-sm font-medium">{review.rating}/5</span>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="max-w-xs">
-                        <p className="text-sm text-slate-600 truncate">{review.comment}</p>
-                        {review.images.length > 0 && (
-                          <p className="text-xs text-blue-600 mt-1">{review.images.length} hình ảnh</p>
-                        )}
-                        {review.reported && (
-                          <Badge className="bg-red-100 text-red-700 mt-1">
-                            <Flag className="h-3 w-3 mr-1" />
-                            Bị báo cáo
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
+
                     <TableCell>{getStatusBadge(review.status)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end space-x-2">
@@ -274,11 +300,11 @@ export default function AdminReviewsPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                   <div>
                                     <p className="text-sm font-medium text-slate-700">Người đánh giá:</p>
-                                    <p className="text-slate-900">{selectedReview.user}</p>
+                                    <p className="text-slate-900">{selectedReview.userName}</p>
                                   </div>
                                   <div>
                                     <p className="text-sm font-medium text-slate-700">Garage:</p>
-                                    <p className="text-slate-900">{selectedReview.garage}</p>
+                                    <p className="text-slate-900">{selectedReview.garageName}</p>
                                   </div>
                                   <div>
                                     <p className="text-sm font-medium text-slate-700">Đánh giá:</p>
@@ -289,47 +315,42 @@ export default function AdminReviewsPage() {
                                   </div>
                                   <div>
                                     <p className="text-sm font-medium text-slate-700">Ngày:</p>
-                                    <p className="text-slate-900">{selectedReview.date}</p>
+                                    <p className="text-slate-900">
+                                      {format(new Date(selectedReview.createdAt), 'dd/MM/yyyy')}
+                                    </p>
                                   </div>
                                 </div>
                                 <div>
                                   <p className="text-sm font-medium text-slate-700 mb-2">Nội dung:</p>
                                   <Textarea value={selectedReview.comment} readOnly className="min-h-[100px]" />
                                 </div>
-                                {selectedReview.images.length > 0 && (
-                                  <div>
-                                    <p className="text-sm font-medium text-slate-700 mb-2">Hình ảnh:</p>
-                                    <div className="grid grid-cols-3 gap-2">
-                                      {selectedReview.images.map((image: string, index: number) => (
-                                        <div
-                                          key={index}
-                                          className="w-full h-24 bg-slate-200 rounded-lg flex items-center justify-center"
-                                        >
-                                          <span className="text-slate-500 text-sm">{image}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
                               </div>
                             )}
                           </DialogContent>
                         </Dialog>
 
-                        {review.status === "pending" && (
+                        {review.status === -1 && (
                           <>
                             <Button
                               size="sm"
-                              onClick={() => handleApprove(review.id)}
+                              onClick={() => handleSetStatus(review.id, 1)}
                               className="bg-green-600 hover:bg-green-700"
                             >
-                              <Check className="h-4 w-4" />
+                              <Check className="h-4 w-4 mr-1" />
+                              
                             </Button>
-                            <Button size="sm" variant="destructive" onClick={() => handleReject(review.id)}>
-                              <X className="h-4 w-4" />
+
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleSetStatus(review.id, 0)}
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              
                             </Button>
                           </>
                         )}
+
                       </div>
                     </TableCell>
                   </TableRow>
@@ -345,6 +366,7 @@ export default function AdminReviewsPage() {
           )}
         </CardContent>
       </Card>
+      <Toaster position="top-right" />
     </DashboardLayout>
   )
 }

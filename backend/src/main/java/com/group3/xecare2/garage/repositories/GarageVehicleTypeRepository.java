@@ -19,7 +19,8 @@ public interface GarageVehicleTypeRepository extends JpaRepository<GarageVehicle
     
     // Tìm loại xe đang hoạt động mà garage hỗ trợ
     List<GarageVehicleType> findByGarageAndIsActiveTrue(Garage garage);
-    
+
+
     // Tìm garage hỗ trợ một loại xe cụ thể
     List<GarageVehicleType> findByVehicleTypeAndIsActiveTrue(VehicleType vehicleType);
     
@@ -28,4 +29,6 @@ public interface GarageVehicleTypeRepository extends JpaRepository<GarageVehicle
     
     // Kiểm tra garage đã hỗ trợ loại xe này chưa
     boolean existsByGarageAndVehicleType(Garage garage, VehicleType vehicleType);
-} 
+
+    void deleteAllByGarage(Garage garage);
+}

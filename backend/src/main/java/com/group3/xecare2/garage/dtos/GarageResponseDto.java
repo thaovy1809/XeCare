@@ -32,7 +32,10 @@ public class GarageResponseDto {
     private Boolean isVerified;
     private GarageStatus status;
     private LocalDateTime createdAt;
-    
+
+    private Double averageRating;
+    private Integer reviewCount;
+
     // Thông tin chủ sở hữu
     private Integer ownerId;
     private String ownerName;

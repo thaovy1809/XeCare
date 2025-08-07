@@ -12,10 +12,10 @@ import com.group3.xecare2.user.entities.User;
 public interface GarageServiceInterface {
     
     // Đăng ký garage mới
-    GarageResponseDto registerGarage(GarageRegistrationDto registrationDto, User owner);
+    GarageResponseDto registerGarage(GarageRegistrationDto registrationDto);
     
     // Cập nhật thông tin garage
-    GarageResponseDto updateGarage(Long garageId, GarageUpdateDto updateDto, User owner);
+    GarageResponseDto updateGarage(Long garageId, GarageUpdateDto updateDto);
     
     // Lấy thông tin garage theo ID
     GarageResponseDto getGarageById(Long garageId);
@@ -48,4 +48,7 @@ public interface GarageServiceInterface {
     
     // Lấy entity Garage theo chủ sở hữu
     Garage getGarageEntityByOwner(User owner);
+    List<GarageResponseDto> findAll();
+
+    Garage saveGarage(Garage garage);
 } 

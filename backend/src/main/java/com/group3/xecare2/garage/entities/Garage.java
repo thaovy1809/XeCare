@@ -38,6 +38,7 @@ public class Garage {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private User owner;
 
     private String name;
@@ -60,11 +61,13 @@ public class Garage {
     @OneToMany(mappedBy = "garage", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     @JsonManagedReference
+    @ToString.Exclude
     private List<GarageVehicleType> vehicleTypes;
 
     @OneToMany(mappedBy = "garage", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     @JsonManagedReference
+    @ToString.Exclude
     private List<GarageService> services;
 
     @PrePersist
